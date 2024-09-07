@@ -29,7 +29,9 @@ $last-child-float: $opposite-direction !default;
 // $colNumber - Found in settings file
 // $totalColumns - Found in settings file
 @function grid-calc($colNumber, $totalColumns) {
-  @return percentage(calc($colNumber / $totalColumns));
+  $unitlessColNumber: $colNumber / 1;
+  $unitlessTotalColumns: $totalColumns / 1;
+  @return percentage(calc($unitlessColNumber / $unitlessTotalColumns));
 }
 
 //
@@ -41,12 +43,11 @@ $last-child-float: $opposite-direction !default;
 //
 // $behavior - Any special behavior for this row? Default: false. Options: nest, collapse, nest-collapse, false.
 @mixin grid-row($behavior: false) {
-
   // use @include grid-row(nest); to include a nested row
   @if $behavior ==nest {
     width: auto;
-    margin-#{$default-float}: - calc($column-gutter/2);
-    margin-#{$opposite-direction}: - calc($column-gutter/2);
+    margin-#{$default-float}: -calc($column-gutter/2);
+    margin-#{$opposite-direction}: -calc($column-gutter/2);
     margin-top: 0;
     margin-bottom: 0;
     max-width: none;
@@ -90,7 +91,8 @@ $last-child-float: $opposite-direction !default;
 // $pull - # of columns to pull. Default: false.
 // $collapse - Get rid of gutter padding on column? Default: false.
 // $float - Should this float? Default: true. Options: true, false, left, right.
-@mixin grid-column($columns: false,
+@mixin grid-column(
+  $columns: false,
   $last-column: false,
   $center: false,
   $offset: false,
@@ -98,8 +100,8 @@ $last-child-float: $opposite-direction !default;
   $pull: false,
   $collapse: false,
   $float: true,
-  $position: false) {
-
+  $position: false
+) {
   // If positioned for default .column, include relative position
   // push and pull require position set
   @if $position or $push or $pull {
@@ -143,13 +145,9 @@ $last-child-float: $opposite-direction !default;
   @if $float {
     @if $float ==left or $float ==true {
       float: $default-float;
-    }
-
-    @else if $float ==right {
+    } @else if $float ==right {
       float: $opposite-direction;
-    }
-
-    @else {
+    } @else {
       float: none;
     }
   }
@@ -165,14 +163,12 @@ $last-child-float: $opposite-direction !default;
   @if $offset {
     margin-#{$default-float}: grid-calc($offset, $total-columns) !important;
   }
-
 }
 
 // Create presentational classes for grid
 //
 // $size - Name of class to use, i.e. "large" will generate .large-1, .large-2, etc.
 @mixin grid-html-classes($size) {
-
   @for $i from 0 through $total-columns - 1 {
     .#{$size}-push-#{$i} {
       @include grid-column($push: $i, $collapse: null, $float: false);
@@ -187,7 +183,6 @@ $last-child-float: $opposite-direction !default;
   .columns {
     @include grid-column($columns: false, $position: true);
   }
-
 
   @for $i from 1 through $total-columns {
     .#{$size}-#{$i} {
@@ -240,9 +235,8 @@ $last-child-float: $opposite-direction !default;
 
   .row {
     &.#{$size}-collapse {
-
-      >.column,
-      >.columns {
+      > .column,
+      > .columns {
         @include grid-column($collapse: true, $float: false);
       }
 
@@ -253,9 +247,8 @@ $last-child-float: $opposite-direction !default;
     }
 
     &.#{$size}-uncollapse {
-
-      >.column,
-      >.columns {
+      > .column,
+      > .columns {
         @include grid-column;
       }
     }
@@ -268,9 +261,8 @@ $last-child-float: $opposite-direction !default;
       @include grid-row;
 
       &.collapse {
-
-        >.column,
-        >.columns {
+        > .column,
+        > .columns {
           @include grid-column($collapse: true, $float: false);
         }
 
@@ -294,11 +286,11 @@ $last-child-float: $opposite-direction !default;
       @include grid-column($columns: $total-columns);
     }
 
-    [class*="column"]+[class*="column"]:last-child {
+    [class*="column"] + [class*="column"]:last-child {
       float: $last-child-float;
     }
 
-    [class*="column"]+[class*="column"].end {
+    [class*="column"] + [class*="column"].end {
       float: $default-float;
     }
 
